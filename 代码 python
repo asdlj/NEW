@@ -1,0 +1,44 @@
+
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+%matplotlib inline
+ 
+data = pd.read_csv('train.csv')  # 查看数据
+data.head()                      # 查看数据集形状
+data.shape                       # 查看数据集数据类型
+data.dtypes
+
+
+from keras.datasets import boston_housing
+(train_data,train_targets),(test_data,test_targets)=boston_housing.load_data()    #加载波士顿房价数据
+mean=train_data.mean(axis=0)
+train_data-=mean
+std=train_data.std(axis=0)
+train_data/=std
+test_data-=mean
+test_data/=std       #数据标准化
+class Net(nn.Module):          #定义存储网路结构
+    def __init__(self):
+        super(Net,self).__init__()
+        self.classify=nn.Sequential(      #nn 模块搭建网络
+            nn.Linear(2,15),                    
+            nn.ReLU(),
+            nn.Linear(15,2),
+            nn.Softmax(dim=1)
+        )
+    def forward(self,x):              #前向传播
+        classification=self.classify(x)
+        return classification
+
+
+net=Net()            #训练网络
+optimizer=torch.optim.SGD(net.parameters(),lr=0.03)     #优化器
+loss_func=nn.CrossEntropyLoss()                #损失函数
+for epoch in range(100):
+    out=net(x)
+    loss=loss_func(out,y)
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
